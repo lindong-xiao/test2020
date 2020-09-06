@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties resource="db.properties"/><!-- properties mysql配置文件 -->
+
+    <typeAliases>
+        <!--
+            方式1:  为指定的类起别名 别名的命名由我们自己来决定
+            type: 要为哪个domain起别名 填写包 类名称
+            alias: 别名的名字
+            <typeAlias type="domain.student" alias="stu"/>
+
+            方式2:  使用package标签批量起别名
+                    别名是mybatis默认为我们取好的 命名不是由我决定的 别名为类名(类名不区分大小写)
+                    name: 指定一个包结构 表示在该包下 所有的domain自动起好了别名
+                    <package name="domain"/>
+        -->
+
+    </typeAliases>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="dao/studentDao.xml"/>
+    </mappers>
+</configuration>

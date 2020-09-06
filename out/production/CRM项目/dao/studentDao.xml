@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.StudentDao">
+    <!--
+        sql语句必须写在对应的标签中
+        <insert>在标签对中写上 insert开头的语句 进行添加造作
+        <update>在标签对中写上 update开头的语句 进行修改造作
+        <delete>在标签对中写上 delete开头的语句 进行删除造作
+        <select>在标签对中写上 select开头的语句 进行查询造作
+        parameterType=""为sql语句传递的参数的类型
+    -->
+    <select id="getByID" parameterType="java.lang.String" resultType="domain.student">
+        select * from t_student where num=#{num}
+    </select>
+    <!--
+    如果有多条记录 resultType应该返回的是集合的泛型
+    -->
+    <!--
+        使用简单类型的基本参数 #{} 可以随意写参数 但是还是要写的有意义
+    -->
+    <select id="getAll" resultType="domain.student">
+        select * from t_student
+    </select>
+    
+    <insert id="setstudent">
+        insert into t_student(num, name) value (#{num}, #{name})
+    </insert>
+
+    <update id="updatestudent">
+        update t_student set num=#{num}, name=#{name} where num=#{num}
+    </update>
+
+    <delete id="deletestudent">
+        delete from t_student where num=#{num}
+    </delete>
+    <!--
+        sql语句传递的参数类型是domain的引用类型那么 #{} 中的标识符必须是domain的属性名
+    -->
+    <select id="select1" parameterType="domain.student" resultType="domain.student">
+        select * from t_student where name=#{name} and num=#{num};
+    </select>
+
+    <!--
+        使用map时 传进去一个 map类型的集合时 #{}中必须写 Map中的key值
+        使用mybatis 时用Map集合遍历集合使用 必须写返回的类型 不能写map
+    -->
+    <select id="select2" parameterType="map" resultType="domain.student">
+        select * from t_student where name=#{name} and num=#{num};
+    </select>
+
+    <!--
+        '%'空格#{name}空格'%' 空格表示 sql语句的拼接操作
+    -->
+    <select id="select3" resultType="domain.student">
+        select * from t_student where name like '%' #{name} '%';
+    </select>
+
+    <select id="select4" resultType="java.lang.Integer">
+        select count(*) from t_student;
+    </select>
+    
+    <select id="select5" parameterType="domain.student" resultType="domain.student">
+        select * from t_student
+        <!--
+            where 标签: 当where 标签使用 必须搭配where标签的if语句 使用 通过if
+            判断 如果有查询条件 则展现where关键字 如果没有查询条件则 不展现where关键字
+            where 会自动屏蔽掉第一个连接符
+        -->
+        <where>
+            <if test="name!=null and name!=''">
+                name like '%' #{name} '%'
+            </if>
+
+            <if test="num!=null and num!=''">
+                and num like '%' #{num} '%'
+            </if>
+        </where>
+    </select>
+<!--
+    foreach 标签:用来遍历传递的数组参数
+    collection:标识传递参数的类型
+            array:数组
+            list:集合
+    itme: 每一次遍历的=出来的数组的元素 在使用该元素的时候 需要套用在#{}中
+    open:拼接循环的开始的符号
+    close:拼接循环的结束符号
+    separaor:元素与元素之间的分隔符
+-->
+    <sql id="chanyong">
+        select *from t_student
+    </sql>
+    <select id="select6" resultType="domain.student">
+    <!--select *from t_student-->
+    <include refid="chanyong"></include>
+    where num in
+<foreach collection="array" item="num" open="(" close=")" separator=",">
+    #{num}
+</foreach>
+    </select>
+
+    <select id="select7" resultType="java.util.Map">
+        select
+        s.name as sname,
+        c.name as cname
+        from t_student s
+        join t_classroom c
+        on s.classroomnum=c.classroomnum
+    </select>
+
+    <select id="select8" resultType="vo.studentandclassroomVo">
+        select s.num snum,
+        s.name sname,
+        c.classroomnum cclassroomnum,
+        c.name cname
+        from t_student s
+        join t_classroom c
+        on s.classroomnum=c.classroomnum
+    </select>
+</mapper>
